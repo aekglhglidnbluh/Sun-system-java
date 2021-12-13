@@ -1,0 +1,146 @@
+package com.company;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main extends JFrame implements KeyListener {
+
+    public static class Planet {
+        double dx, dy;
+        Planet parent;
+        double a;
+        Color color;
+
+        public Planet(double dx, double dy, Planet parent, double a, Color color) {
+            this.dx = dx;
+            this.dy = dy;
+            this.parent = parent;
+            this.a = a;
+            this.color = color;
+        }
+
+        double[] whereIAm() {
+            if (parent == null) return new double[]{dx, dy};
+            else {
+                double[] parentPos = parent.whereIAm();
+                return new double[]{dx + parentPos[0], dy + parentPos[1]};
+            }
+        }
+    }
+    static ArrayList<Planet> planets = new ArrayList<>(List.of());
+    static Planet sun = new Planet(700, 400, null, 0, Color.YELLOW);
+    static Planet merkuriy = new Planet(100, 100, sun, 0.05, Color.ORANGE);
+    static Planet venera = new Planet(150, 150, sun, 0.014, Color.GREEN);
+    static Planet earth = new Planet(200, 200, sun, 0.01, Color.BLUE);
+    static Planet mars = new Planet(250, 250, sun, 0.02, Color.RED);
+    static Planet saturn = new Planet(350, 350, sun, 0.009, Color.PINK);
+    static Planet neptun = new Planet(450, 450, sun, 0.004, Color.WHITE);
+    static Planet uran = new Planet(500, 500, sun, 0.03, Color.ORANGE);
+    static Planet moon = new Planet(600, 600, earth, 0.03, Color.WHITE);
+    static {
+        planets.add(sun);
+        planets.add(merkuriy);
+        planets.add(venera);
+        planets.add(earth);
+        planets.add(mars);
+        planets.add(saturn);
+        planets.add(neptun);
+        planets.add(uran);
+        planets.add(moon);
+    }
+    static int m[] = new int[9];
+    public static void draw(Graphics2D g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, 5000, 5000);
+        m[0] = 100;
+        m[1] = 15;
+        m[2] = 30;
+        m[3] = 30;
+        m[4] = 20;
+        m[5] = 40;
+        m[6] = 50;
+        m[7] = 35;
+        m[8] = 10;
+        for (int i = 0; i < planets.size(); i++) {
+            g.setColor(planets.get(i).color);
+            g.fillOval((int) planets.get(i).whereIAm()[0] - m[i] / 2, (int) planets.get(i).whereIAm()[1] - m[i] / 2, m[i], m[i]);
+            double x = (planets.get(i).dx * Math.cos(planets.get(i).a)) + (planets.get(i).dy * Math.sin(planets.get(i).a));
+            double y = (planets.get(i).dx * -Math.sin(planets.get(i).a)) + (planets.get(i).dy * Math.cos(planets.get(i).a));
+            planets.get(i).dx = x;
+            planets.get(i).dy = y;
+        }
+    }
+
+    //Функция вызывается при нажатии клавиши один раз, и при удерживании несколько раз в секунду
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        int o = 0;
+        if (key == KeyEvent.VK_LEFT) {
+            o = -1;
+        }
+        if(o == -1){
+            for (int i = 0; i < 9; i++) {
+                m[i] = m[i]*2;
+            }
+        }
+        /*if(o == -1){
+            for (int i = 0; i < 9; i++) {
+                sun = new Planet(700, 400, null, 0, Color.YELLOW);
+                merkuriy = new Planet(100, 100, sun, 0.1, Color.ORANGE);
+                venera = new Planet(150, 150, sun, 0.028, Color.GREEN);
+                earth = new Planet(200, 200, sun, 0.02, Color.BLUE);
+                mars = new Planet(250, 250, sun, 0.04, Color.RED);
+                saturn = new Planet(350, 350, sun, 0.018, Color.PINK);
+                neptun = new Planet(450, 450, sun, 0.008, Color.WHITE);
+                uran = new Planet(500, 500, sun, 0.06, Color.ORANGE);
+                moon = new Planet(30, 30, earth, 0.06, Color.WHITE);
+            }
+        }*/
+    }
+    static final int w = 1545;
+    static final int h = 870;
+
+    //магический код позволяющий всему работать, лучше не трогать
+    public static void main(String[] args) throws InterruptedException {
+        Main jf = new Main();
+        jf.setSize(w, h);
+        jf.setUndecorated(false);
+        jf.setTitle("Sun system");
+        jf.setVisible(true);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jf.createBufferStrategy(2);
+        jf.addKeyListener(jf);
+        while (true) {
+            long frameLength = 1000 / 60; //пытаемся работать из рассчета  60 кадров в секунду
+            long start = System.currentTimeMillis();
+            BufferStrategy bs = jf.getBufferStrategy();
+            Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+            g.clearRect(0, 0, jf.getWidth(), jf.getHeight());
+            draw(g);
+
+            bs.show();
+            g.dispose();
+
+            long end = System.currentTimeMillis();
+            long len = end - start;
+            if (len < frameLength) {
+                Thread.sleep(frameLength - len);
+            }
+
+
+        }
+
+    }
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyReleased(KeyEvent e) {
+
+    }
+}
