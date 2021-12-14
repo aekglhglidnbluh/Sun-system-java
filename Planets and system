@@ -42,6 +42,7 @@ public class Main extends JFrame implements KeyListener {
     static Planet neptun = new Planet(450, 450, sun, 0.004, Color.WHITE);
     static Planet uran = new Planet(500, 500, sun, 0.03, Color.ORANGE);
     static Planet moon = new Planet(25, 25, earth, 0.03, Color.WHITE);
+    static Planet evropa = new Planet(50, 50, neptun, 0.05, Color.DARK_GRAY);
     static {
         planets.add(sun);
         planets.add(merkuriy);
@@ -52,8 +53,10 @@ public class Main extends JFrame implements KeyListener {
         planets.add(neptun);
         planets.add(uran);
         planets.add(moon);
+        planets.add(evropa);
     }
-    static int m[] = new int[9];
+    static int m[] = {100, 15, 30, 30, 20, 40, 50, 35, 10, 20};
+
     public static void draw(Graphics2D g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 2000, 2000);
@@ -82,6 +85,9 @@ public class Main extends JFrame implements KeyListener {
         int o = 0;
         if (key == KeyEvent.VK_LEFT) {
             o = -1;
+        }
+        if(o == -1){
+                
         }
     }
     static final int w = 1545;
